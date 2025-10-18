@@ -1,4 +1,16 @@
-buildscript {
-  repositories { google(); mavenCentral() }
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
 }
-allprojects { repositories { google(); mavenCentral() } }
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+rootProject.name = "Shuaib_Digital_Prayer_Clock"
+include(":app")
