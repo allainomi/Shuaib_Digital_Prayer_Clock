@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Shuaib Digital Prayer Clock – شعیب ڈیجیٹل نماز گھڑی</string>
+    <string name="play_azan">اذان بجاؤ</string>
+    <string name="set_azan">آذان وقت سیٹ کریں</string>
+    <string name="toggle_bg">پس منظر تبدیل کریں</string>
+    <string name="about">تعارف</string>
+</resources>

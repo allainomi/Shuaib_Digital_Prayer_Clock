@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:padding="16dp" android:background="@drawable/kaaba_bg">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:gravity="center_horizontal">
+
+        <TextView android:id="@+id/textTime" android:text="00:00:00"
+            android:textSize="36sp" android:textColor="#FFFFFF" android:textStyle="bold"
+            android:layout_marginTop="40dp"/>
+
+        <TextView android:id="@+id/textDate" android:text="17 Oct 2025"
+            android:textSize="18sp" android:textColor="#FFD700" android:layout_marginTop="8dp"/>
+
+        <TextView android:id="@+id/textHijri" android:text="5 Rabi-ul-Awwal 1447 هـ"
+            android:textSize="18sp" android:textColor="#00FFCC" android:layout_marginTop="5dp"/>
+
+        <EditText android:id="@+id/editTime" android:hint="05:30" android:inputType="time"
+            android:layout_marginTop="20dp" android:layout_width="250dp" android:layout_height="wrap_content" android:gravity="center"/>
+
+        <Button android:id="@+id/btnSetAzan" android:text="@string/set_azan" android:layout_marginTop="10dp"/>
+        <Button android:id="@+id/btnPlayAzan" android:text="@string/play_azan" android:layout_marginTop="10dp"/>
+        <Button android:id="@+id/btnToggleBackground" android:text="@string/toggle_bg" android:layout_marginTop="10dp"/>
+        <Button android:id="@+id/btnAbout" android:text="@string/about" android:layout_marginTop="10dp"/>
+
+    </LinearLayout>
+</ScrollView>
