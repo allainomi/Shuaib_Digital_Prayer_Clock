@@ -30,21 +30,24 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew clean assembleDebug
 
-    - name: Find all APK files
+    - name: Explore build directory
       run: |
-        echo "🔍 Searching for APK files..."
-        find . -name "*.apk" -type f | head -20
-        echo "📁 Build outputs directory:"
-        ls -la app/build/outputs/ || echo "No app/build/outputs directory"
-        ls -la build/outputs/ || echo "No build/outputs directory"
+        echo "📂 Complete project structure:"
+        find . -name "*.apk" -o -name "build" -type d | head -30
+        echo "---"
+        if [ -d "app/build" ]; then
+          echo "📱 App build directory exists"
+          find app/build -name "*.apk" -type f
+        else
+          echo "❌ App build directory not found"
+        fi
 
-    - name: Upload APK Artifact
+    - name: Upload any found APK
       uses: actions/upload-artifact@v4
       with:
-        name: android-apk
+        name: android-build-output
         path: |
-          **/build/outputs/apk/**/*.apk
-          **/build/outputs/bundle/**/*.aab
-          **/build/**/*.apk
+          **/*.apk
+          **/*.aab
         if-no-files-found: warn
         retention-days: 7
