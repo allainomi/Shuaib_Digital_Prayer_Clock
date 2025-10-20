@@ -25,6 +25,8 @@ jobs:
         
         if [ -f "app/build.gradle" ] && [ -f "app/src/main/AndroidManifest.xml" ]; then
           echo "✅ ANDROID APP PROJECT"
+          echo "📱 Android files found:"
+          find . -name "AndroidManifest.xml" -o -name "*.gradle" | head -10
         elif [ -f "build.gradle" ] && [ -d "src" ]; then
           echo "✅ JAVA/KOTLIN LIBRARY PROJECT" 
         elif [ -f "package.json" ]; then
@@ -53,3 +55,25 @@ jobs:
         echo "📂 DIRECTORY STRUCTURE:"
         echo "----------------------"
         find . -maxdepth 3 -type d | sort
+
+    - name: Check Build Systems
+      run: |
+        echo "🛠️ BUILD SYSTEMS CHECK:"
+        echo "----------------------"
+        if [ -f "gradlew" ]; then
+          echo "✅ Gradle Wrapper found"
+        else
+          echo "❌ Gradle Wrapper not found"
+        fi
+        
+        if [ -f "build.gradle" ]; then
+          echo "✅ build.gradle found"
+          echo "Gradle content preview:"
+          head -20 build.gradle
+        fi
+        
+        if [ -f "app/build.gradle" ]; then
+          echo "✅ app/build.gradle found"
+          echo "App Gradle content preview:"
+          head -20 app/build.gradle
+        fi
