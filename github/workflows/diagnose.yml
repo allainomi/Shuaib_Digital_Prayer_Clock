@@ -1,0 +1,55 @@
+name: Project Diagnosis
+
+on:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Complete Project Analysis
+      run: |
+        echo "🔍 COMPLETE PROJECT ANALYSIS"
+        echo "============================"
+        echo ""
+        echo "📁 ROOT DIRECTORY CONTENTS:"
+        ls -la
+        echo ""
+        echo "📊 PROJECT TYPE DETECTION:"
+        echo "--------------------------"
+        
+        if [ -f "app/build.gradle" ] && [ -f "app/src/main/AndroidManifest.xml" ]; then
+          echo "✅ ANDROID APP PROJECT"
+        elif [ -f "build.gradle" ] && [ -d "src" ]; then
+          echo "✅ JAVA/KOTLIN LIBRARY PROJECT" 
+        elif [ -f "package.json" ]; then
+          echo "✅ NODE.JS PROJECT"
+          cat package.json | head -10
+        elif [ -f "requirements.txt" ]; then
+          echo "✅ PYTHON PROJECT"
+          cat requirements.txt | head -10
+        elif [ -f "Cargo.toml" ]; then
+          echo "✅ RUST PROJECT"
+        elif [ -f "go.mod" ]; then
+          echo "✅ GO PROJECT"
+        elif [ -f "pubspec.yaml" ]; then
+          echo "✅ FLUTTER PROJECT"
+        elif [ -f "index.html" ]; then
+          echo "✅ WEB PROJECT"
+        else
+          echo "❓ UNKNOWN PROJECT TYPE"
+          echo ""
+          echo "📋 ALL FILES ANALYSIS:"
+          echo "---------------------"
+          find . -type f -name "*.*" | head -30
+        fi
+
+        echo ""
+        echo "📂 DIRECTORY STRUCTURE:"
+        echo "----------------------"
+        find . -maxdepth 3 -type d | sort
