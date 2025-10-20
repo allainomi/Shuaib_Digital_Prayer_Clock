@@ -3,8 +3,6 @@ name: Android Build
 on:
   push:
     branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
 
 jobs:
   build:
@@ -13,10 +11,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-
-    - name: Create local.properties
-      run: |
-        echo "sdk.dir=$ANDROID_HOME" > local.properties
 
     - name: Set up JDK 17
       uses: actions/setup-java@v4
@@ -29,29 +23,27 @@ jobs:
       with:
         packages: |
           platform-tools
-          platforms;android-33
-          build-tools;33.0.0
+          platforms;android-34
+          build-tools;34.0.0
+
+    - name: Create local.properties
+      run: |
+        echo "sdk.dir=$ANDROID_HOME" > local.properties
 
     - name: Make gradlew executable
       run: chmod +x gradlew
+
+    - name: Accept Android Licenses
+      run: |
+        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
 
     - name: Build Debug APK
       run: |
         ./gradlew clean assembleDebug --stacktrace
 
-    - name: Check APK Location
-      run: |
-        echo "🔍 Checking for APK files..."
-        find . -name "*.apk" -type f
-        echo ""
-        echo "📱 App build directory:"
-        ls -la Shuaib_Digital_Prayer_Clock/app/build/outputs/apk/ || ls -la app/build/outputs/apk/
-
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: prayer-clock-apk
-        path: |
-          Shuaib_Digital_Prayer_Clock/app/build/outputs/apk/debug/*.apk
-          app/build/outputs/apk/debug/*.apk
+        path: app/build/outputs/apk/debug/app-debug.apk
         retention-days: 7
