@@ -1,0 +1,21 @@
+name: Check Project Type
+on: [push]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: What's in my project?
+      run: |
+        echo "📁 YOUR PROJECT FILES:"
+        ls -la
+        echo ""
+        echo "🔍 FINDING PROJECT TYPE:"
+        if [ -f "app/build.gradle" ]; then
+          echo "✅ Android Project Found"
+        else
+          echo "❌ NOT an Android Project"
+          echo "Available files:"
+          find . -type f -name "*.*" | head -20
+        fi
