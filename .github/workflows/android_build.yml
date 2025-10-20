@@ -1,4 +1,4 @@
-name: Android Build
+name: Android Build Simple
 
 on:
   push:
@@ -20,30 +20,22 @@ jobs:
 
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
-      with:
-        packages: |
-          platform-tools
-          platforms;android-34
-          build-tools;34.0.0
 
     - name: Create local.properties
       run: |
         echo "sdk.dir=$ANDROID_HOME" > local.properties
 
-    - name: Make gradlew executable
-      run: chmod +x gradlew
-
-    - name: Accept Android Licenses
+    - name: Accept licenses
       run: |
         yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
 
-    - name: Build Debug APK
+    - name: Build APK
       run: |
-        ./gradlew clean assembleDebug --stacktrace
+        chmod +x gradlew
+        ./gradlew clean assembleDebug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
-        name: prayer-clock-apk
-        path: app/build/outputs/apk/debug/app-debug.apk
-        retention-days: 7
+        name: android-app
+        path: app/build/outputs/apk/debug/*.apk
