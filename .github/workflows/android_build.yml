@@ -1,4 +1,4 @@
-name: Android Build Simple
+name: Android Build Debug
 
 on:
   push:
@@ -27,15 +27,48 @@ jobs:
 
     - name: Accept licenses
       run: |
-        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
-    - name: Build APK
+    - name: Check Project Structure
       run: |
-        chmod +x gradlew
-        ./gradlew clean assembleDebug
+        echo "📁 Project Structure:"
+        ls -la
+        echo ""
+        echo "📱 Android Files:"
+        find . -name "*.gradle" -o -name "AndroidManifest.xml" | head -10
+        echo ""
+        echo "🔧 Gradle Wrapper:"
+        ls -la gradlew || echo "No gradlew found"
 
-    - name: Upload APK
+    - name: Make gradlew executable
+      run: chmod +x gradlew
+
+    - name: Check Gradle Version
+      run: ./gradlew --version || echo "Gradle check failed"
+
+    - name: Build with Full Logs
+      run: |
+        ./gradlew clean assembleDebug --info --stacktrace --no-daemon
+
+    - name: Find ALL Build Outputs
+      if: always()
+      run: |
+        echo "🔍 Searching for ALL build files:"
+        find . -name "*.apk" -type f
+        echo ""
+        echo "📂 Build directories:"
+        find . -name "build" -type d
+        echo ""
+        echo "📊 App build contents:"
+        ls -la app/build/ || echo "No app/build directory"
+        ls -la Shuaib_Digital_Prayer_Clock/app/build/ || echo "No Shuaib_Digital_Prayer_Clock/app/build directory"
+
+    - name: Upload Build Reports
+      if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: android-app
-        path: app/build/outputs/apk/debug/*.apk
+        name: build-reports
+        path: |
+          **/build/reports/
+          **/build/logs/
+        retention-days: 7
