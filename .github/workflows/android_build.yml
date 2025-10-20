@@ -1,7 +1,9 @@
-name: Android Build Debug
+name: Android Build
 
 on:
   push:
+    branches: [ main, master ]
+  pull_request:
     branches: [ main, master ]
 
 jobs:
@@ -11,23 +13,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-
-    - name: Analyze Project Structure
-      run: |
-        echo "📁 ROOT DIRECTORY:"
-        ls -la
-        echo ""
-        echo "📱 ANDROID PROJECT CHECK:"
-        if [ -d "app" ]; then
-          echo "✅ 'app' directory exists"
-          ls -la app/
-        else
-          echo "❌ 'app' directory missing - This may not be an Android project"
-          find . -name "build.gradle" -type f
-        fi
-        echo ""
-        echo "🔍 GRADLE FILES:"
-        find . -name "*.gradle*" -type f
 
     - name: Create local.properties
       run: |
@@ -39,40 +24,34 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+      with:
+        packages: |
+          platform-tools
+          platforms;android-33
+          build-tools;33.0.0
+
     - name: Make gradlew executable
       run: chmod +x gradlew
 
-    - name: Check Gradle Setup
+    - name: Build Debug APK
       run: |
-        ./gradlew --version || echo "Gradle failed"
-        echo ""
-        echo "📋 AVAILABLE TASKS:"
-        ./gradlew tasks --all | grep -i assemble || echo "No assemble tasks found"
+        ./gradlew clean assembleDebug --stacktrace
 
-    - name: Try Building
+    - name: Check APK Location
       run: |
-        echo "🛠️ Attempting build..."
-        ./gradlew clean assembleDebug --stacktrace --no-daemon
-
-    - name: Build Result Analysis
-      if: always()
-      run: |
-        echo "📊 BUILD RESULT ANALYSIS:"
-        echo "Build directories found:"
-        find . -name "build" -type d
-        echo ""
-        echo "APK files found:"
+        echo "🔍 Checking for APK files..."
         find . -name "*.apk" -type f
         echo ""
-        echo "All files in build outputs:"
-        find . -path "*/build/outputs/*" -type f 2>/dev/null || echo "No build outputs found"
+        echo "📱 App build directory:"
+        ls -la Shuaib_Digital_Prayer_Clock/app/build/outputs/apk/ || ls -la app/build/outputs/apk/
 
-    - name: Upload Build Logs
-      if: always()
+    - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
-        name: build-debug-info
+        name: prayer-clock-apk
         path: |
-          **/build/reports/
-          **/build/logs/
-        if-no-files-found: ignore
+          Shuaib_Digital_Prayer_Clock/app/build/outputs/apk/debug/*.apk
+          app/build/outputs/apk/debug/*.apk
+        retention-days: 7
