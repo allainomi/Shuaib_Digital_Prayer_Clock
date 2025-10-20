@@ -1,47 +1,25 @@
-name: Android CI
+name: Android Build
 
-on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+on: [push, pull_request]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Set up JDK 11
+    - uses: actions/checkout@v4
+    
+    - name: Create local.properties
+      run: echo "sdk.dir=$ANDROID_HOME" > local.properties
+      
+    - name: Setup Java
       uses: actions/setup-java@v4
       with:
         java-version: '11'
         distribution: 'temurin'
-
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
-      with:
-        packages: |
-          platform-tools
-          platforms;android-34
-          build-tools;34.0.0
-        ndk: 25.2.9519653
-
-    - name: Create local.properties
-      run: |
-        echo "sdk.dir=$ANDROID_HOME" > local.properties
-
-    - name: Change wrapper permissions
-      run: chmod +x ./gradlew
-
-    - name: Build with Gradle
+        
+    - name: Make gradlew executable
+      run: chmod +x gradlew
+      
+    - name: Build APK
       run: ./gradlew clean assembleDebug
-
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: app-debug
-        path: app/build/outputs/apk/debug/app-debug.apk
-        retention-days: 7
