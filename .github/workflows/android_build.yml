@@ -18,36 +18,44 @@ jobs:
       run: |
         echo "sdk.dir=$ANDROID_HOME" > local.properties
 
-    - name: Set up JDK 11
+    - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
-        java-version: '11'
+        java-version: '17'
         distribution: 'temurin'
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
 
     - name: Change wrapper permissions
       run: chmod +x ./gradlew
 
-    - name: Build with Gradle
-      run: ./gradlew clean assembleDebug
-
-    - name: Explore build directory
+    - name: Debug project structure
       run: |
-        echo "📂 Complete project structure:"
-        find . -name "*.apk" -o -name "build" -type d | head -30
-        echo "---"
-        if [ -d "app/build" ]; then
-          echo "📱 App build directory exists"
-          find app/build -name "*.apk" -type f
-        else
-          echo "❌ App build directory not found"
-        fi
+        echo "📁 Project structure:"
+        ls -la
+        echo "📱 Android files:"
+        find . -name "*.gradle" -o -name "AndroidManifest.xml" | head -10
 
-    - name: Upload any found APK
+    - name: Build with Gradle
+      run: |
+        ./gradlew clean assembleDebug --stacktrace --info
+
+    - name: Find ALL build outputs
+      run: |
+        echo "🔍 Searching for ALL build files..."
+        find . -name "*.apk" -type f
+        find . -name "build" -type d
+        echo "📊 Build directories:"
+        ls -la app/ || echo "No app directory"
+        ls -la build/ || echo "No build directory"
+
+    - name: Upload complete build folder
+      if: success()
       uses: actions/upload-artifact@v4
       with:
-        name: android-build-output
+        name: complete-build
         path: |
-          **/*.apk
-          **/*.aab
-        if-no-files-found: warn
-        retention-days: 7
+          app/build/
+          build/
+        retention-days: 1
