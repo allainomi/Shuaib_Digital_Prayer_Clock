@@ -1,21 +1,47 @@
-name: Check Project Type
-on: [push]
+name: Build APK
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  check:
+  build:
     runs-on: ubuntu-latest
+    
     steps:
-    - uses: actions/checkout@v4
-    - name: What's in my project?
-      run: |
-        echo "📁 YOUR PROJECT FILES:"
-        ls -la
-        echo ""
-        echo "🔍 FINDING PROJECT TYPE:"
-        if [ -f "app/build.gradle" ]; then
-          echo "✅ Android Project Found"
-        else
-          echo "❌ NOT an Android Project"
-          echo "Available files:"
-          find . -type f -name "*.*" | head -20
-        fi
+    - uses: actions/checkout@v2
+    
+    - name: Set up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+    
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.13.0'
+    
+    - name: Install dependencies
+      run: flutter pub get
+    
+    - name: Build APK
+      run: flutter build apk --release
+    
+    - name: Upload APK
+      uses: actions/upload-artifact@v2
+      with:
+        name: prayer-clock-apk
+        path: build/app/outputs/flutter-apk/app-release.apk
+    
+    # یہ شامل کریں build reports کے لیے
+    - name: Upload Build Reports
+      uses: actions/upload-artifact@v2
+      if: always()
+      with:
+        name: build-reports
+        path: |
+          **/build/reports/
+          **/build/logs/
